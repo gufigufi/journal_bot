@@ -8,6 +8,7 @@ import jinja2
 import hashlib
 import logging
 import os
+import re
 from database import Database
 from google_sheets import GoogleSheetsService
 
@@ -56,170 +57,6 @@ async def logout_handler(request):
     return web.HTTPFound('/')
 
 
-async def dashboard(request):
-    session = await get_session(request)
-    
-    if 'student_id' not in session:
-        return web.HTTPFound('/')
-    
-    db = request.app['db']
-    group = await db.get_group_by_id(session['group_id'])
-    
-    if not group:
-        return aiohttp_jinja2.render_template('dashboard.html', request, {
-            'student_name': session['student_name'],
-            'error': 'Група не знайдена'
-        })
-    
-    sheets_service = request.app['sheets_service']
-    sheet_names = sheets_service.get_sheet_names(group['spreadsheet_id'])
-    
-    subjects = [name for name in sheet_names if name.lower() not in ['список', 'список групи']]
-    
-    return aiohttp_jinja2.render_template('dashboard.html', request, {
-        'student_name': session['student_name'],
-        'subjects': subjects
-    })
-
-
-async def view_grades(request):
-    session = await get_session(request)
-    
-    if 'student_id' not in session:
-        return web.HTTPFound('/')
-    
-    subject = request.match_info.get('subject')
-    
-    try:
-        db = request.app['db']
-        group = await db.get_group_by_id(session['group_id'])
-        
-        if not group:
-            return aiohttp_jinja2.render_template('grades.html', request, {
-                'student_name': session['student_name'],
-                'subject': subject,
-                'error': 'Група не знайдена'
-            })
-        
-        sheets_service = request.app['sheets_service']
-        grades_data = sheets_service.get_student_grades(
-            group['spreadsheet_id'],
-            subject,
-            session['student_name']
-        )
-        
-        if not grades_data:
-            return aiohttp_jinja2.render_template('grades.html', request, {
-                'student_name': session['student_name'],
-                'subject': subject,
-                'error': 'Оцінки не знайдено'
-            })
-        
-        return aiohttp_jinja2.render_template('grades.html', request, {
-            'student_name': session['student_name'],
-            'subject': grades_data['subject'],
-            'grades': grades_data['grades']
-        })
-    except Exception as e:
-        logger.error(f"Error in view_grades: {e}", exc_info=True)
-        return aiohttp_jinja2.render_template('grades.html', request, {
-            'student_name': session.get('student_name', 'Невідомий'),
-            'subject': subject,
-            'error': f'Помилка при отриманні оцінок: {str(e)}'
-        })
-
-
-async def create_web_app(db: Database, sheets_service: GoogleSheetsService):
-    app = web.Application()
-    
-    secret_key = os.getenv('WEB_SECRET_KEY')
-    if not secret_key:
-        secret_key = fernet.Fernet.generate_key().decode()
-    
-    setup(app, EncryptedCookieStorage(secret_key))
-    
-    aiohttp_jinja2.setup(
-        app,
-        loader=jinja2.FileSystemLoader('templates')
-    )
-    
-    app['db'] = db
-    app['sheets_service'] = sheets_service
-    
-    app.router.add_get('/', login_page)
-    app.router.add_post('/login', login_handler)
-    app.router.add_get('/logout', logout_handler)
-    app.router.add_get('/dashboard', dashboard)
-    app.router.add_get('/grades/{subject}', view_grades)
-    
-    app.router.add_static('/static', 'static')
-    
-    return app
-
-async def view_grades(request):
-    session = await get_session(request)
-    
-    if 'student_id' not in session:
-        return web.HTTPFound('/')
-    
-    from urllib.parse import unquote
-    subject = unquote(request.match_info.get('subject'))
-    
-    try:
-        db = request.app['db']
-        group = await db.get_group_by_id(session['group_id'])
-        
-        if not group:
-            return aiohttp_jinja2.render_template('grades.html', request, {
-                'student_name': session['student_name'],
-                'subject': subject,
-                'error': 'Група не знайдена'
-            })
-        
-        sheets_service = request.app['sheets_service']
-        grades_data = sheets_service.get_student_grades(
-            group['spreadsheet_id'],
-            subject,
-            session['student_name']
-        )
-        
-        if not grades_data:
-            return aiohttp_jinja2.render_template('grades.html', request, {
-                'student_name': session['student_name'],
-                'subject': subject,
-                'error': 'Оцінки не знайдено'
-            })
-        
-        return aiohttp_jinja2.render_template('grades.html', request, {
-            'student_name': session['student_name'],
-            'subject': grades_data['subject'],
-            'grades': grades_data['grades']
-        })
-    except Exception as e:
-        logger.error(f"Error in view_grades: {e}", exc_info=True)
-        return aiohttp_jinja2.render_template('grades.html', request, {
-            'student_name': session.get('student_name', 'Невідомий'),
-            'subject': subject,
-            'error': f'Помилка при отриманні оцінок: {str(e)}'
-        })
-
-from aiohttp import web
-import aiohttp_session
-from aiohttp_session import setup, get_session
-from aiohttp_session.cookie_storage import EncryptedCookieStorage
-from cryptography import fernet
-import aiohttp_jinja2
-import jinja2
-import hashlib
-import logging
-import os
-import re
-from database import Database
-from google_sheets import GoogleSheetsService
-
-logger = logging.getLogger(__name__)
-
-
 def transliterate(text):
     translit_dict = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'h', 'ґ': 'g', 'д': 'd', 'е': 'e', 'є': 'ye',
@@ -238,6 +75,7 @@ def transliterate(text):
     result = re.sub(r'-+', '-', result)
     result = result.strip('-')
     return result.lower()
+
 
 async def dashboard(request):
     session = await get_session(request)
@@ -272,6 +110,7 @@ async def dashboard(request):
         'student_name': session['student_name'],
         'subjects': subjects
     })
+
 
 async def view_grades(request):
     session = await get_session(request)
@@ -320,3 +159,137 @@ async def view_grades(request):
             'subject': subject,
             'error': f'Помилка при отриманні оцінок: {str(e)}'
         })
+
+
+async def create_web_app(db: Database, sheets_service: GoogleSheetsService):
+    app = web.Application()
+    
+    secret_key_str = os.getenv('WEB_SECRET_KEY')
+    if not secret_key_str:
+        secret_key = fernet.Fernet.generate_key()
+        logger.warning("WEB_SECRET_KEY not found in environment, generated new key")
+    else:
+        try:
+            secret_key = secret_key_str.encode('utf-8')
+            fernet.Fernet(secret_key)
+            logger.info("Loaded WEB_SECRET_KEY from environment")
+        except Exception as e:
+            logger.error(f"Invalid WEB_SECRET_KEY: {e}, generating new key")
+            secret_key = fernet.Fernet.generate_key()
+    
+    setup(app, EncryptedCookieStorage(secret_key))
+    
+    aiohttp_jinja2.setup(
+        app,
+        loader=jinja2.FileSystemLoader('templates')
+    )
+    
+    app['db'] = db
+    app['sheets_service'] = sheets_service
+    
+    app.router.add_get('/', login_page)
+    app.router.add_post('/login', login_handler)
+    app.router.add_get('/logout', logout_handler)
+    app.router.add_get('/dashboard', dashboard)
+    app.router.add_get('/grades/{subject}', view_grades)
+    
+    app.router.add_static('/static', 'static')
+    
+    return app
+
+async def create_web_app(db: Database, sheets_service: GoogleSheetsService):
+    app = web.Application()
+    
+    secret_key = fernet.Fernet.generate_key()
+    logger.info("Generated new session key")
+    
+    setup(app, EncryptedCookieStorage(secret_key))
+
+async def create_web_app(db: Database, sheets_service: GoogleSheetsService):
+    app = web.Application()
+    
+    secret_key = fernet.Fernet.generate_key()
+    logger.info("Generated new session key")
+    
+    setup(app, EncryptedCookieStorage(secret_key))
+    
+    aiohttp_jinja2.setup(
+        app,
+        loader=jinja2.FileSystemLoader('templates')
+    )
+    
+    app['db'] = db
+    app['sheets_service'] = sheets_service
+    
+    app.router.add_get('/', login_page)
+    app.router.add_post('/login', login_handler)
+    app.router.add_get('/logout', logout_handler)
+    app.router.add_get('/dashboard', dashboard)
+    app.router.add_get('/grades/{subject}', view_grades)
+    
+    app.router.add_static('/static', 'static')
+    
+    return app
+
+from aiohttp import web
+import aiohttp_session
+from aiohttp_session import setup, get_session
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
+from cryptography import fernet
+import aiohttp_jinja2
+import jinja2
+import hashlib
+import logging
+import os
+import re
+import secrets
+from database import Database
+from google_sheets import GoogleSheetsService
+
+logger = logging.getLogger(__name__)
+
+async def create_web_app(db: Database, sheets_service: GoogleSheetsService):
+    app = web.Application()
+    
+    secret_key = secrets.token_bytes(32)
+    logger.info("Generated new 32-byte session key")
+    
+    setup(app, EncryptedCookieStorage(secret_key))
+    
+    aiohttp_jinja2.setup(
+        app,
+        loader=jinja2.FileSystemLoader('templates')
+    )
+    
+    app['db'] = db
+    app['sheets_service'] = sheets_service
+    
+    app.router.add_get('/', login_page)
+    app.router.add_post('/login', login_handler)
+    app.router.add_get('/logout', logout_handler)
+    app.router.add_get('/dashboard', dashboard)
+    app.router.add_get('/grades/{subject}', view_grades)
+    
+    app.router.add_static('/static', 'static')
+    
+    return app
+
+    sheets_service = request.app['sheets_service']
+    sheet_names = sheets_service.get_sheet_names(group['spreadsheet_id'])
+    
+    logger.info(f"Sheet names from Google Sheets: {sheet_names}")
+    
+    filtered_names = [name for name in sheet_names if name.lower() not in ['список', 'список групи']]
+    
+    logger.info(f"Filtered sheet names: {filtered_names}")
+    
+    subjects = []
+    subject_mapping = {}
+    for name in filtered_names:
+        slug = transliterate(name)
+        subjects.append({'name': name, 'slug': slug})
+        subject_mapping[slug] = name
+    
+    logger.info(f"Subject mapping: {subject_mapping}")
+    
+    session['subject_mapping'] = subject_mapping

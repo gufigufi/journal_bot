@@ -40,9 +40,9 @@
                         {% for grade in grades %}
                         <tr>
                             <td>{{ loop.index }}</td>
-                            <td>{{ grade.lesson_type }}</td>
-                            <td>{{ grade.lesson_date }}</td>
-                            <td class="grade-cell {% if grade.grade == 'НБ' %}grade-absent{% endif %}">
+                            <td>{{ grade.lesson_type if grade.lesson_type else '-' }}</td>
+                            <td>{{ grade.lesson_date if grade.lesson_date else '-' }}</td>
+                            <td class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
                                 {{ grade.grade }}
                             </td>
                         </tr>
@@ -55,12 +55,3 @@
     </div>
 </body>
 </html>
-
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ grade.lesson_type if grade.lesson_type else '-' }}</td>
-                            <td>{{ grade.lesson_date if grade.lesson_date else '-' }}</td>
-                            <td class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
-                                {{ grade.grade }}
-                            </td>
-                        </tr>
