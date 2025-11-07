@@ -61,16 +61,19 @@ class GoogleSheetsService:
             
             values = result.get('values', [])
             
-            if len(values) < 4:
+            if len(values) < 3:
                 return None
             
+            # Рядок 1 (values[0]): A1 - назва предмета, D1, E1, F1... - типи занять
             subject_name = values[0][0] if len(values[0]) > 0 else sheet_name
+            lesson_types = values[0][3:] if len(values[0]) > 3 else []
             
-            lesson_types = values[1][3:] if len(values[1]) > 3 else []
-            lesson_dates = values[2][3:] if len(values[2]) > 3 else []
+            # Рядок 2 (values[1]): D2, E2, F2... - дати занять
+            lesson_dates = values[1][3:] if len(values[1]) > 3 else []
             
+            # Рядок 3+ (values[2+]): оцінки студентів, ім'я в колонці C (індекс 2)
             student_row = None
-            for row in values[3:]:
+            for row in values[2:]:
                 if len(row) > 2 and row[2].strip() == student_name.strip():
                     student_row = row
                     break
@@ -78,6 +81,7 @@ class GoogleSheetsService:
             if not student_row:
                 return None
             
+            # Оцінки студента (D3+, E3+, F3+... - індекс 3+)
             grades = student_row[3:] if len(student_row) > 3 else []
             
             grades_data = []
