@@ -13,3 +13,4 @@ ENV/
 .idea/
 *.log
 data/
+credentials.json

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вхід - Система оцінок</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>🎓 Система перегляду оцінок</h1>
+            <h2>Вхід для студентів</h2>
+            
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label for="login">Логін:</label>
+                    <input type="text" id="login" name="login" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Увійти</button>
+            </form>
+            
+            <div class="info-text">
+                <p>Для отримання доступу створіть логін та пароль через Telegram бота командою <code>/create_web_login</code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

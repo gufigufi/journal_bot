@@ -12,11 +12,14 @@ CREATE TABLE IF NOT EXISTS students (
   student_chat_id TEXT NULL,
   father_chat_id TEXT NULL,
   mother_chat_id TEXT NULL,
+  web_login TEXT NULL UNIQUE,
+  web_password_hash TEXT NULL,
   is_active INTEGER NOT NULL DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(group_id) REFERENCES groups(id) ON DELETE CASCADE,
   UNIQUE(full_name, group_id)
 );
+
 
 CREATE TABLE IF NOT EXISTS subjects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

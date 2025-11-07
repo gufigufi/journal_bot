@@ -33,6 +33,16 @@ class Database:
                 row = await cursor.fetchone()
                 return dict(row) if row else None
     
+    async def get_group_by_id(self, group_id: int) -> Optional[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM groups WHERE id = ?", 
+                (group_id,)
+            ) as cursor:
+                row = await cursor.fetchone()
+                return dict(row) if row else None
+
     async def find_student(self, full_name: str, group_id: int) -> Optional[Dict[str, Any]]:
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
@@ -131,3 +141,43 @@ class Database:
             )
             await db.commit()
             return cursor.lastrowid
+    
+    async def get_student_by_chat_id(self, chat_id: str) -> Optional[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                """SELECT * FROM students 
+                WHERE student_chat_id = ? OR father_chat_id = ? OR mother_chat_id = ?""",
+                (chat_id, chat_id, chat_id)
+            ) as cursor:
+                row = await cursor.fetchone()
+                return dict(row) if row else None
+    
+    async def check_login_exists(self, login: str) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                "SELECT COUNT(*) FROM students WHERE web_login = ?",
+                (login,)
+            ) as cursor:
+                count = await cursor.fetchone()
+                return count[0] > 0
+    
+    async def set_web_credentials(self, student_id: int, login: Optional[str], password_hash: Optional[str]) -> bool:
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                "UPDATE students SET web_login = ?, web_password_hash = ? WHERE id = ?",
+                (login, password_hash, student_id)
+            )
+            await db.commit()
+            return True
+
+    
+    async def verify_web_credentials(self, login: str, password_hash: str) -> Optional[Dict[str, Any]]:
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute(
+                "SELECT * FROM students WHERE web_login = ? AND web_password_hash = ?",
+                (login, password_hash)
+            ) as cursor:
+                row = await cursor.fetchone()
+                return dict(row) if row else None

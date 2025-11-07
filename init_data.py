@@ -10,15 +10,13 @@ async def add_sample_data():
     print("Додавання тестових даних...")
     
     group_id = await db.add_group(
-        name="ІП-21",
-        spreadsheet_id="your_spreadsheet_id_here"
+        name="П-21",
+        spreadsheet_id="1Npfelri9lQACDiq5Jy-eIG1DC9SOF9gtHH0BaRcN1ek"
     )
     print(f"Створено групу ІП-21 (ID: {group_id})")
     
     students = [
-        "Іванов Іван Іванович",
-        "Петренко Петро Петрович",
-        "Сидоренко Сидір Сидорович"
+        "Бологан Данііл Максимович"
     ]
     
     for student_name in students:

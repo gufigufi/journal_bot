@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }} - Оцінки</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="grades-box">
+            <div class="header">
+                <h1>📊 {{ subject }}</h1>
+                <div class="user-info">
+                    <span>Студент: <strong>{{ student_name }}</strong></span>
+                    <a href="/logout" class="btn-logout">Вийти</a>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <a href="/dashboard" class="btn-back">← Назад до предметів</a>
+            </div>
+            
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% else %}
+            <div class="grades-table-wrapper">
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Тип заняття</th>
+                            <th>Дата</th>
+                            <th>Оцінка</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grade in grades %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ grade.lesson_type }}</td>
+                            <td>{{ grade.lesson_date }}</td>
+                            <td class="grade-cell {% if grade.grade == 'НБ' %}grade-absent{% endif %}">
+                                {{ grade.grade }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ grade.lesson_type if grade.lesson_type else '-' }}</td>
+                            <td>{{ grade.lesson_date if grade.lesson_date else '-' }}</td>
+                            <td class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
+                                {{ grade.grade }}
+                            </td>
+                        </tr>

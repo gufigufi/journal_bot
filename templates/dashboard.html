@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вибір предмету - Система оцінок</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-box">
+            <div class="header">
+                <h1>🎓 Система перегляду оцінок</h1>
+                <div class="user-info">
+                    <span>Студент: <strong>{{ student_name }}</strong></span>
+                    <a href="/logout" class="btn-logout">Вийти</a>
+                </div>
+            </div>
+            
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <h2>Оберіть предмет для перегляду оцінок:</h2>
+            
+            {% if subjects %}
+            <div class="subjects-grid">
+                {% for subject_data in subjects %}
+                <a href="/grades/{{ subject_data.slug }}" class="subject-card">
+                    <div class="subject-icon">📚</div>
+                    <div class="subject-name">{{ subject_data.name }}</div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="info-message">
+                <p>Предмети не знайдено. Зверніться до адміністратора.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
