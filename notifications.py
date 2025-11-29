@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from typing import Dict, Any, Optional
 from database import Database
 from bot import TelegramBot
@@ -11,6 +12,7 @@ class NotificationService:
     def __init__(self, database: Database, telegram_bot: TelegramBot):
         self.db = database
         self.bot = telegram_bot
+        self.lock = asyncio.Lock()
     
     def format_grade_message(self, event: Dict[str, Any]) -> str:
         """Форматирует сообщение с эмодзи и красивым оформлением"""
@@ -170,27 +172,28 @@ class NotificationService:
     
     async def process_pending_events(self):
         """Обрабатывает все необработанные события"""
-        try:
-            events = await self.db.get_unprocessed_events()
-            
-            logger.info(f"📋 Found {len(events)} pending events to process")
-            
-            if not events:
-                logger.info("No pending events")
-                return
-            
-            for event in events:
-                logger.info(f"\n{'='*50}")
-                success = await self.process_grade_event(event)
+        async with self.lock:
+            try:
+                events = await self.db.get_unprocessed_events()
                 
-                if success:
-                    await self.db.mark_event_processed(event['id'])
-                    logger.info(f"✅ Event {event['id']} marked as processed")
-                else:
-                    logger.warning(f"⚠️ Event {event['id']} processing failed, will retry later")
-                    # НЕ помечаем как обработанное, чтобы попробовать еще раз
-            
-            logger.info(f"{'='*50}\n")
-            
-        except Exception as e:
-            logger.error(f"Error in process_pending_events: {e}", exc_info=True)
+                logger.info(f"📋 Found {len(events)} pending events to process")
+                
+                if not events:
+                    logger.info("No pending events")
+                    return
+                
+                for event in events:
+                    logger.info(f"\n{'='*50}")
+                    success = await self.process_grade_event(event)
+                    
+                    if success:
+                        await self.db.mark_event_processed(event['id'])
+                        logger.info(f"✅ Event {event['id']} marked as processed")
+                    else:
+                        logger.warning(f"⚠️ Event {event['id']} processing failed, will retry later")
+                        # НЕ помечаем как обработанное, чтобы попробовать еще раз
+                
+                logger.info(f"{'='*50}\n")
+                
+            except Exception as e:
+                logger.error(f"Error in process_pending_events: {e}", exc_info=True)
