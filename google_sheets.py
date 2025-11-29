@@ -84,21 +84,27 @@ class GoogleSheetsService:
             # Оцінки студента (D3+, E3+, F3+... - індекс 3+)
             grades = student_row[3:] if len(student_row) > 3 else []
             
+            # Визначаємо максимальну кількість колонок на основі заголовків (типи та дати)
+            max_cols = max(len(lesson_types), len(lesson_dates))
+            
             grades_data = []
-            for i, grade in enumerate(grades):
+            for i in range(max_cols):
                 lesson_type = lesson_types[i] if i < len(lesson_types) else ""
                 lesson_date = lesson_dates[i] if i < len(lesson_dates) else ""
+                grade = grades[i] if i < len(grades) else ""
                 
-                if not lesson_type and not lesson_date and not grade:
-                    continue
+                # Очищаємо тип заняття від зайвих пробілів
+                clean_type = lesson_type.strip() if lesson_type else ""
                 
-                display_grade = grade if grade else "пусто"
-                
-                grades_data.append({
-                    'lesson_type': lesson_type,
-                    'lesson_date': lesson_date,
-                    'grade': display_grade
-                })
+                # Показуємо лише якщо є тип заняття (і це не "-") або дата
+                if (clean_type and clean_type != '-') or lesson_date:
+                    display_grade = grade if grade else "пусто"
+                    
+                    grades_data.append({
+                        'lesson_type': lesson_type,
+                        'lesson_date': lesson_date,
+                        'grade': display_grade
+                    })
             
             return {
                 'subject': subject_name,

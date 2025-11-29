@@ -146,11 +146,19 @@ async def view_grades(request):
                 'subject': subject,
                 'error': 'Оцінки не знайдено'
             })
+            
+        # Sorting logic
+        sort_order = request.query.get('sort', 'desc')
+        grades = grades_data['grades']
+        
+        if sort_order == 'desc':
+            grades = list(reversed(grades))
         
         return aiohttp_jinja2.render_template('grades.html', request, {
             'student_name': session['student_name'],
             'subject': grades_data['subject'],
-            'grades': grades_data['grades']
+            'grades': grades,
+            'sort_order': sort_order
         })
     except Exception as e:
         logger.error(f"Error in view_grades: {e}", exc_info=True)

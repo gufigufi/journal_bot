@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ subject }} - Оцінки</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
     <div class="container">
         <div class="grades-box">
@@ -16,11 +18,17 @@
                     <a href="/logout" class="btn-logout">Вийти</a>
                 </div>
             </div>
-            
+
             <div class="navigation">
                 <a href="/dashboard" class="btn-back">← Назад до предметів</a>
+
+                {% if sort_order == 'desc' %}
+                <a href="?sort=asc" class="btn-sort">↓ Спочатку старі</a>
+                {% else %}
+                <a href="?sort=desc" class="btn-sort">↑ Спочатку нові</a>
+                {% endif %}
             </div>
-            
+
             {% if error %}
             <div class="error-message">
                 {{ error }}
@@ -38,11 +46,20 @@
                     </thead>
                     <tbody>
                         {% for grade in grades %}
-                        <tr>
+                        {% set row_class = '' %}
+                        {% if grade.lesson_type and grade.lesson_type.strip() in ['П', 'АТ'] %}
+                        {% if grade.grade and grade.grade != 'пусто' and grade.grade != 'НБ' %}
+                        {% set row_class = 'row-green' %}
+                        {% else %}
+                        {% set row_class = 'row-red' %}
+                        {% endif %}
+                        {% endif %}
+                        <tr class="{{ row_class }}">
                             <td>{{ loop.index }}</td>
                             <td>{{ grade.lesson_type if grade.lesson_type else '-' }}</td>
                             <td>{{ grade.lesson_date if grade.lesson_date else '-' }}</td>
-                            <td class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
+                            <td
+                                class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
                                 {{ grade.grade }}
                             </td>
                         </tr>
@@ -54,4 +71,5 @@
         </div>
     </div>
 </body>
+
 </html>

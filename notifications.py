@@ -78,7 +78,20 @@ class NotificationService:
             logger.info(f"Group ID: {group_id}")
             logger.info(f"Subject: {event.get('subject')}")
             logger.info(f"Old value: '{event.get('old_value')}'")
+            logger.info(f"Old value: '{event.get('old_value')}'")
             logger.info(f"New value: '{event.get('new_value')}'")
+            
+            # Перевірка на наявність дати або типу заняття
+            lesson_date = event.get('lesson_date')
+            lesson_type = event.get('lesson_type')
+            
+            # Перевіряємо, чи є тип заняття валідним (не пустий і не "-")
+            has_valid_type = lesson_type and lesson_type.strip() and lesson_type.strip() != '-'
+            
+            if not lesson_date and not has_valid_type:
+                logger.warning(f"⚠️ Event {event_id} skipped: No lesson date and no valid lesson type")
+                # Повертаємо True, щоб подія була позначена як оброблена і не блокувала чергу
+                return True
             
             # Ищем студента в БД
             student = await self.db.find_student(student_full_name, group_id)
