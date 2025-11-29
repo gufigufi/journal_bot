@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌓</button>
     <div class="container">
         <div class="grades-box">
             <div class="header">
@@ -59,7 +60,7 @@
                             <td>{{ grade.lesson_type if grade.lesson_type else '-' }}</td>
                             <td>{{ grade.lesson_date if grade.lesson_date else '-' }}</td>
                             <td
-                                class="grade-cell {% if grade.grade == 'НБ' or grade.grade == 'пусто' %}grade-absent{% endif %}">
+                                class="grade-cell {% if grade.grade == 'НБ' %}grade-absent{% elif grade.grade == 'пусто' %}grade-empty{% endif %}">
                                 {{ grade.grade }}
                             </td>
                         </tr>
@@ -70,6 +71,7 @@
             {% endif %}
         </div>
     </div>
+    <script src="/static/js/theme.js"></script>
 </body>
 
 </html>

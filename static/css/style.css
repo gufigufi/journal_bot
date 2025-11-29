@@ -1,3 +1,79 @@
+:root {
+    --bg-gradient-start: #667eea;
+    --bg-gradient-end: #764ba2;
+    --bg-color: #f5f7fa;
+    --card-bg: white;
+    --text-color: #333;
+    --text-secondary: #666;
+    --heading-color: #667eea;
+    --border-color: #e0e0e0;
+    --input-bg: white;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-light: rgba(102, 126, 234, 0.4);
+    --table-hover: #f8f9ff;
+    --table-border: #f0f0f0;
+    --success-color: #4caf50;
+    --error-color: #ff4757;
+    --error-bg: #ffe0e0;
+    --error-text: #d32f2f;
+    --info-bg: #e3f2fd;
+    --info-text: #1976d2;
+    --code-bg: #e0e0e0;
+
+    /* Button Colors */
+    --btn-bg: #667eea;
+    --btn-text: white;
+    --btn-hover: #5a67d8;
+    --btn-logout-bg: #ff4757;
+    --btn-logout-hover: #ff3838;
+
+    /* Grade Colors */
+    --grade-color: #4caf50;
+    /* Green */
+    --absent-color: #ff4757;
+    /* Red */
+    --empty-color: rgba(255, 71, 87, 0.5);
+    /* Semi-transparent Red */
+}
+
+[data-theme="dark"] {
+    --bg-gradient-start: #1a1c23;
+    --bg-gradient-end: #2d3748;
+    --bg-color: #1a202c;
+    --card-bg: #2d3748;
+    --text-color: #e2e8f0;
+    --text-secondary: #a0aec0;
+    --heading-color: #ffffff;
+    /* White for better contrast */
+    --border-color: #4a5568;
+    --input-bg: #4a5568;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --table-hover: #2c313d;
+    --table-border: #4a5568;
+    --success-color: #68d391;
+    --error-color: #fc8181;
+    --error-bg: #742a2a;
+    --error-text: #feb2b2;
+    --info-bg: #2c5282;
+    --info-text: #bee3f8;
+    --code-bg: #4a5568;
+
+    /* Button Colors Dark Mode */
+    --btn-bg: #5a67d8;
+    /* Darker blue/indigo */
+    --btn-text: white;
+    --btn-hover: #4c51bf;
+    --btn-logout-bg: #e53e3e;
+    /* Darker red */
+    --btn-logout-hover: #c53030;
+
+    /* Grade Colors Dark Mode */
+    --grade-color: #68d391;
+    --absent-color: #fc8181;
+    --empty-color: rgba(252, 129, 129, 0.5);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,12 +82,13 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    color: var(--text-color);
 }
 
 .container {
@@ -22,10 +99,11 @@ body {
 .login-box,
 .dashboard-box,
 .grades-box {
-    background: white;
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px var(--shadow-color);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .login-box {
@@ -34,14 +112,14 @@ body {
 }
 
 h1 {
-    color: #667eea;
+    color: var(--heading-color);
     text-align: center;
     margin-bottom: 10px;
     font-size: 2em;
 }
 
 h2 {
-    color: #333;
+    color: var(--text-color);
     text-align: center;
     margin-bottom: 30px;
     font-size: 1.3em;
@@ -68,11 +146,11 @@ h2 {
 }
 
 .user-info span {
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .user-info strong {
-    color: #333;
+    color: var(--text-color);
 }
 
 .form-group {
@@ -82,22 +160,24 @@ h2 {
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text-color);
     font-weight: 500;
 }
 
 .form-group input {
     width: 100%;
     padding: 12px 15px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color);
     border-radius: 10px;
     font-size: 16px;
-    transition: border-color 0.3s;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: border-color 0.3s, background-color 0.3s;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--heading-color);
 }
 
 .btn-primary {
@@ -115,12 +195,12 @@ h2 {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 20px var(--shadow-light);
 }
 
 .btn-logout {
     padding: 8px 20px;
-    background: #ff4757;
+    background: var(--btn-logout-bg);
     color: white;
     text-decoration: none;
     border-radius: 8px;
@@ -129,14 +209,14 @@ h2 {
 }
 
 .btn-logout:hover {
-    background: #ff3838;
+    background: var(--btn-logout-hover);
 }
 
 .btn-back {
     display: inline-block;
     padding: 10px 20px;
-    background: #667eea;
-    color: white;
+    background: var(--btn-bg);
+    color: var(--btn-text);
     text-decoration: none;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -144,66 +224,66 @@ h2 {
 }
 
 .btn-back:hover {
-    background: #5568d3;
+    background: var(--btn-hover);
 }
 
 .btn-sort {
     display: inline-block;
     padding: 10px 20px;
-    background: #fff;
-    color: #667eea;
+    background: var(--card-bg);
+    color: var(--heading-color);
     text-decoration: none;
     border-radius: 8px;
     margin-bottom: 20px;
     margin-left: 10px;
-    border: 2px solid #667eea;
+    border: 2px solid var(--heading-color);
     transition: all 0.3s;
     font-weight: 600;
 }
 
 .btn-sort:hover {
-    background: #667eea;
-    color: white;
+    background: var(--heading-color);
+    color: var(--card-bg);
 }
 
 .error-message {
-    background: #ffe0e0;
-    color: #d32f2f;
+    background: var(--error-bg);
+    color: var(--error-text);
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 20px;
-    border-left: 4px solid #d32f2f;
+    border-left: 4px solid var(--error-text);
 }
 
 .info-message {
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--info-bg);
+    color: var(--info-text);
     padding: 15px;
     border-radius: 10px;
     margin-top: 20px;
-    border-left: 4px solid #1976d2;
+    border-left: 4px solid var(--info-text);
 }
 
 .info-text {
     margin-top: 20px;
     padding: 15px;
-    background: #f5f5f5;
+    background: var(--bg-color);
     border-radius: 10px;
     text-align: center;
 }
 
 .info-text p {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 14px;
     line-height: 1.6;
 }
 
 .info-text code {
-    background: #e0e0e0;
+    background: var(--code-bg);
     padding: 2px 8px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
-    color: #667eea;
+    color: var(--heading-color);
 }
 
 .subjects-grid {
@@ -226,7 +306,7 @@ h2 {
 
 .subject-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 15px 30px var(--shadow-light);
 }
 
 .subject-icon {
@@ -247,10 +327,10 @@ h2 {
 .grades-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: var(--card-bg);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px var(--shadow-color);
 }
 
 .grades-table thead {
@@ -266,29 +346,60 @@ h2 {
 
 .grades-table td {
     padding: 15px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--table-border);
+    color: var(--text-color);
 }
 
 .grades-table tbody tr:hover {
-    background: #f8f9ff;
+    background: var(--table-hover);
 }
 
 .grades-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.grade-cell {
+.grades-table td.grade-cell {
     font-weight: 600;
     font-size: 1.1em;
-    color: #4caf50;
+    color: var(--grade-color);
 }
 
-.grade-absent {
-    color: #ff4757;
+.grades-table td.grade-absent {
+    color: var(--absent-color);
+}
+
+.grades-table td.grade-empty {
+    color: var(--empty-color);
 }
 
 .navigation {
     margin-bottom: 20px;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    color: var(--text-color);
+    font-size: 20px;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    border-color: var(--heading-color);
 }
 
 @media (max-width: 768px) {
@@ -319,6 +430,14 @@ h2 {
     .grades-table th,
     .grades-table td {
         padding: 10px;
+    }
+
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
 }
 
